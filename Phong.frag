@@ -60,46 +60,41 @@ void main(){
 
 	// Material properties
 	vec3 MaterialDiffuseColor = texture( DiffuseTextureSampler,vec2(UV.x,UV.y)).rgb;
+	vec3 MaterialSpecularColor = vec3(1,1,1);
+	float mulitplier = 100;//Idk how to do tiling
 
-
-	if (GRS > 23 )
+	if (GRS > 23 )//sampling texture way to big. 
 	{
-		MaterialDiffuseColor = texture( SnowTextureSampler,vec2(UV.x,UV.y)).rgb;
+		MaterialDiffuseColor = texture( SnowTextureSampler,vec2(UV.x,UV.y)*mulitplier).rgb;
+		MaterialSpecularColor = texture( SnowSTextureSampler,vec2(UV.x,UV.y)*mulitplier).rgb;
 	}
 	else if (GRS > 21)
 	{
 		float alpha = (GRS - 21) / 2;// this is a number between 0 and 1 when it is 1 it is close to snow
-		MaterialDiffuseColor = mix(texture( RockTextureSampler,vec2(UV.x,UV.y)).rgb,texture( SnowTextureSampler,vec2(UV.x,UV.y)).rgb,alpha);
+		MaterialDiffuseColor = mix(texture( RockTextureSampler,vec2(UV.x,UV.y)*mulitplier).rgb,texture( SnowTextureSampler,vec2(UV.x,UV.y)*mulitplier).rgb,alpha);
+		MaterialSpecularColor = mix(texture( RockSTextureSampler,vec2(UV.x,UV.y)*mulitplier).rgb,texture( SnowSTextureSampler,vec2(UV.x,UV.y)*mulitplier).rgb,alpha);
 	}
 	else if (GRS > 12 )
 	{
-		MaterialDiffuseColor = texture( RockTextureSampler,vec2(UV.x,UV.y)).rgb;
+		MaterialDiffuseColor = texture( RockTextureSampler,vec2(UV.x,UV.y)*mulitplier).rgb;
+		MaterialSpecularColor = texture( RockSTextureSampler,vec2(UV.x,UV.y)*mulitplier).rgb;
 	}
 	else if (GRS > 10)
 	{
 		float alpha = (GRS - 10) / 2;// this is a number between 0 and 1 when it is 1 it is close to snow
-		MaterialDiffuseColor = mix(texture( GrassTextureSampler,vec2(UV.x,UV.y)).rgb,texture( RockTextureSampler,vec2(UV.x,UV.y)).rgb,alpha);
+		MaterialDiffuseColor = mix(texture( GrassTextureSampler,vec2(UV.x,UV.y)*mulitplier).rgb,texture( RockTextureSampler,vec2(UV.x,UV.y)*mulitplier).rgb,alpha);
+		MaterialSpecularColor = mix(texture( GrassSTextureSampler,vec2(UV.x,UV.y)*mulitplier).rgb,texture( RockSTextureSampler,vec2(UV.x,UV.y)*mulitplier).rgb,alpha);
 	}
 	else
 	{
-		MaterialDiffuseColor = texture( GrassTextureSampler,vec2(UV.x,UV.y)).rgb;
+		MaterialDiffuseColor = texture( GrassTextureSampler,vec2(UV.x,UV.y)*mulitplier).rgb;
+		MaterialSpecularColor = texture( GrassSTextureSampler,vec2(UV.x,UV.y)*mulitplier).rgb;
 	}
 
 	vec3 MaterialAmbientColor = vec3(0.1,0.1,0.1) * MaterialDiffuseColor;
-	vec3 MaterialSpecularColor = vec3(1,1,1);
 
-	if (GRS == 0)
-	{
-		MaterialSpecularColor = texture( GrassSTextureSampler,vec2(UV.x,UV.y)).rgb;
-	}
-	else if (GRS == 1)
-	{
-		MaterialSpecularColor = texture( RockSTextureSampler,vec2(UV.x,UV.y)).rgb;
-	}
-	else if (GRS == 2)
-	{
-		MaterialSpecularColor = texture( SnowSTextureSampler,vec2(UV.x,UV.y)).rgb;
-	}
+
+
 
 	// Distance to the light
 	//float distance = length( LightPosition_worldspace - Position_worldspace );

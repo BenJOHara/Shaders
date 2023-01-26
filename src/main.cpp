@@ -39,6 +39,11 @@ GLuint programID;
 //Textures 
 GLuint DiffuseTexture;
 GLuint HeightMapTexture;
+
+GLuint HeightMapW;
+GLuint HeightMapH;
+
+
 GLuint GrassTexture;
 GLuint RockTexture;
 GLuint SnowTexture;
@@ -525,13 +530,16 @@ void LoadTextures()
 	// Load the texture
 	int w, h;
 	DiffuseTexture = loadBMP_custom("banana.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_MIRRORED_REPEAT, w, h);//GL_MIRRORED_REPEAT, GL_REPEAT, 
-	HeightMapTexture = loadBMP_custom("mountains_height.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_MIRRORED_REPEAT, w, h);
-	GrassTexture = loadBMP_custom("grass.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_MIRRORED_REPEAT, w, h);
-	RockTexture = loadBMP_custom("rocks.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_MIRRORED_REPEAT, w, h);
-	SnowTexture = loadBMP_custom("snow.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_MIRRORED_REPEAT, w, h);
-	GrassTextureS = loadBMP_custom("grass-s.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_MIRRORED_REPEAT, w, h);
-	RockTextureS = loadBMP_custom("rocks-s.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_MIRRORED_REPEAT, w, h);
-	SnowTextureS = loadBMP_custom("snow-s.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_MIRRORED_REPEAT, w, h);
+	int wh, hh;
+	HeightMapTexture = loadBMP_custom("mountains_height.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_CLAMP_TO_BORDER, wh, hh);
+	HeightMapH = hh;
+	HeightMapW = wh;
+	GrassTexture = loadBMP_custom("grass.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, w, h);
+	RockTexture = loadBMP_custom("rocks.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, w, h);
+	SnowTexture = loadBMP_custom("snow.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, w, h);
+	GrassTextureS = loadBMP_custom("grass-s.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, w, h);
+	RockTextureS = loadBMP_custom("rocks-s.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, w, h);
+	SnowTextureS = loadBMP_custom("snow-s.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, w, h);
 }
 
 void UnloadTextures()
@@ -615,6 +623,11 @@ int main(void)
 		GLuint GrassSTextureID = glGetUniformLocation(programID, "GrassSTextureSampler");
 		GLuint RockSTextureID = glGetUniformLocation(programID, "RockSTextureSampler");
 		GLuint SnowSTextureID = glGetUniformLocation(programID, "SnowSTextureSampler");
+
+
+		GLuint HeightDID = glGetUniformLocation(programID, "HeightMapData");
+		//set floats/int
+		glUniform2i(HeightDID, HeightMapW, HeightMapH);
 
 		//Set textures 
 		glActiveTexture(GL_TEXTURE0);

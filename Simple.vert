@@ -18,6 +18,7 @@ out vec3 EyeDirection_tangentspace;
 
 // Values that stay constant for the whole mesh.
 uniform sampler2D HeightMapTextureSampler;
+uniform vec2 HeightMapData;
 uniform mat4 MVP;
 uniform mat4 V;
 uniform mat4 M;
@@ -35,7 +36,7 @@ float getVertexHeight(vec2 vertexUV){
 
 vec3 calcNormal(vec2 vertexUV){
 
-	float mulitplier = 256;
+	float mulitplier = HeightMapData.x;
 	vec2 vertexUVLeft = vec2(vertexUV.x - 1 / mulitplier, vertexUV.y);
 	vec2 vertexUVRight = vec2(vertexUV.x + 1 / mulitplier, vertexUV.y);
 	vec2 vertexUVUp = vec2(vertexUV.x, vertexUV.y + 1 / mulitplier);
