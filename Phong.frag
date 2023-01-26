@@ -6,7 +6,7 @@ in vec3 Position_worldspace;
 in vec3 EyeDirection_cameraspace;
 in vec3 LightDirection_cameraspace;
 in vec3 Normal_cameraspace;
-//in vec3 Normal_worldspace;
+in vec3 Normal_worldspace;
 
 // Ouput data
 out vec3 color;
@@ -105,5 +105,7 @@ void main(){
 		diffuse +
 		specular;
 		// Specular : reflective highlight, like a mirror
+
+	//color = Normal_worldspace;
 
 }

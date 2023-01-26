@@ -23,8 +23,8 @@ using namespace glm;
 
 #include <common/controls.hpp>
 
-static const int window_width = 1920;
-static const int window_height = 1080;
+static const int window_width = 1280;
+static const int window_height = 720;
 
 static const int n_points = 200;
 static const float m_scale = 0.5f;
@@ -555,7 +555,7 @@ void LoadTextures()
 	int w, h;
 	DiffuseTexture = loadBMP_custom("banana.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_MIRRORED_REPEAT, w, h);//GL_MIRRORED_REPEAT, GL_REPEAT, 
 	int wh, hh;
-	HeightMapTexture = loadBMP_custom("mountains_height.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_CLAMP_TO_BORDER, wh, hh);
+	HeightMapTexture = loadBMP_custom("mountains_height.bmp", GL_NEAREST_MIPMAP_LINEAR, GL_MIRRORED_REPEAT, wh, hh);
 	HeightMapH = hh;
 	HeightMapW = wh;
 	GrassTexture = loadBMP_custom("grass.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_MIRRORED_REPEAT, w, h);
@@ -583,11 +583,13 @@ int main(void)
 	// Accept fragment if it closer to the camera than the former one
 	glDepthFunc(GL_LESS);
 	// Cull triangles which normal is not towards the camera
-	//glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 
 	bool tess = true;
+	bool geo = false;
 	if (tess)
 		LoadShaders(programID, "Simple.vert", "Phong.frag", "contr.tesc", "eval.tese");
+
 	else
 		LoadShaders(programID,"1and2.vert","1and2.frag");
 	// Use our shader

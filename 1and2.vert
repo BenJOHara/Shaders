@@ -34,7 +34,7 @@ float getVertexHeight(vec2 vertexUV){
 	return vertexHeight / 256;
 }
 
-vec3 calcNormal(vec2 vertexUV){
+vec3 calcNormal(vec2 vertexUV){//estimate normal from heightmap
 
 	float mulitplier = HeightMapData.x;
 	vec2 vertexUVLeft = vec2(vertexUV.x - 1 / mulitplier, vertexUV.y);

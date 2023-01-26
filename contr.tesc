@@ -33,7 +33,7 @@ void main(){
 //starts with numPoints, so for each patch needs res/numpoints
 // so res/numPoints = inner + outer
 
-    int outer = min(8, max ( int(floor(res / (numPoints * numPoints ))), 1));//Limited to 8 cus my laptop is bad
+    int outer = min(32, max ( int(floor(res / (numPoints * numPoints * 10))), 1));//Limited to 8 cus my laptop is bad
     int inner = outer;
 
     gl_TessLevelOuter[0] = outer;//so nothing happens?
