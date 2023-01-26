@@ -6,7 +6,7 @@ in vec3 Position_worldspace;
 in vec3 EyeDirection_cameraspace;
 in vec3 LightDirection_cameraspace;
 in vec3 Normal_cameraspace;
-in vec3 Normal_worldspace;
+//in vec3 Normal_worldspace;
 
 // Ouput data
 out vec3 color;
@@ -25,28 +25,6 @@ uniform mat3 MV3x3;
 uniform vec3 LightPosition_worldspace;
 
 
-/*int isGRS(float y){//make it less harsh somehow
-
-	//float nY = normalize( Normal_worldspace).y;//normal cacluation not working
-	if(y > 23 ){//
-		return 2;//snow
-	}
-	else if (y > 21)
-	{
-		return 3;//snow and rock
-	}
-	else if(y > 12 ){//
-		return 1;//rock
-	}
-	else if (y > 9)
-	{
-		return 4;//rock and grass
-	}
-	else{
-		return 0;//grass
-	}
-}*/
-
 void main(){
 
 	float GRS = Position_worldspace.y;
@@ -61,7 +39,7 @@ void main(){
 	// Material properties
 	vec3 MaterialDiffuseColor = texture( DiffuseTextureSampler,vec2(UV.x,UV.y)).rgb;
 	vec3 MaterialSpecularColor = vec3(1,1,1);
-	float mulitplier = 100;//Idk how to do tiling
+	float mulitplier = 10;//Idk how to do tiling
 
 	if (GRS > 23 )//sampling texture way to big. 
 	{

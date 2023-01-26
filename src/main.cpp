@@ -451,9 +451,33 @@ void LoadModel(string path, GLint mode)
 						indices.push_back(bottomRight);
 					}
 					n++;
-
 				}
 			}
+
+		}
+		else if (mode == GL_PATCHES)
+		{
+			//TODO:
+			int n = 0;
+			for (int i = 0; i < n_points; i++)
+			{
+				for (int j = 0; j < n_points; j++)
+				{
+					if (j != n_points - 1 && i != n_points - 1)
+					{
+						int topLeft = n;
+						int topRight = topLeft + 1;
+						int bottomLeft = topLeft + n_points;
+						int bottomRight = bottomLeft + 1;
+						indices.push_back(topLeft);
+						indices.push_back(topRight);
+						indices.push_back(bottomRight);
+						indices.push_back(bottomLeft);
+					}
+					n++;
+				}
+			}
+			//or maybe, just one, [n,0], [n,n], [0,0], [0,n]
 		}
 		else {
 			std::cout << "Can't process that mode..." << endl;
@@ -534,12 +558,12 @@ void LoadTextures()
 	HeightMapTexture = loadBMP_custom("mountains_height.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_CLAMP_TO_BORDER, wh, hh);
 	HeightMapH = hh;
 	HeightMapW = wh;
-	GrassTexture = loadBMP_custom("grass.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, w, h);
-	RockTexture = loadBMP_custom("rocks.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, w, h);
-	SnowTexture = loadBMP_custom("snow.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, w, h);
-	GrassTextureS = loadBMP_custom("grass-s.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, w, h);
-	RockTextureS = loadBMP_custom("rocks-s.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, w, h);
-	SnowTextureS = loadBMP_custom("snow-s.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, w, h);
+	GrassTexture = loadBMP_custom("grass.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_MIRRORED_REPEAT, w, h);
+	RockTexture = loadBMP_custom("rocks.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_MIRRORED_REPEAT, w, h);
+	SnowTexture = loadBMP_custom("snow.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_MIRRORED_REPEAT, w, h);
+	GrassTextureS = loadBMP_custom("grass-s.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_MIRRORED_REPEAT, w, h);
+	RockTextureS = loadBMP_custom("rocks-s.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_MIRRORED_REPEAT, w, h);
+	SnowTextureS = loadBMP_custom("snow-s.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_MIRRORED_REPEAT, w, h);
 }
 
 void UnloadTextures()
@@ -561,16 +585,25 @@ int main(void)
 	// Cull triangles which normal is not towards the camera
 	//glEnable(GL_CULL_FACE);
 
-	LoadShaders(programID,"Simple.vert","Phong.frag");
-	
+	bool tess = true;
+	if (tess)
+		LoadShaders(programID, "Simple.vert", "Phong.frag", "contr.tesc", "eval.tese");
+	else
+		LoadShaders(programID,"1and2.vert","1and2.frag");
 	// Use our shader
 
 	LoadTextures();
-	LoadModel("", GL_TRIANGLES);//banana.obj
+	if (tess)
+	{
+		glPatchParameteri(GL_PATCH_VERTICES, 4);
+		LoadModel("", GL_PATCHES);//banana.obj//GL_TRIANGLES
+	}
+	else 
+		LoadModel("", GL_TRIANGLES);//banana.obj//
 
 	//Our light position is fixed
 	glm::vec3 lightPos = glm::vec3(0, -0.5, -0.5);
-//	glm::vec3 lightPos = glm::vec3(0, 4, 4);
+	//glm::vec3 lightPos = glm::vec3(0, 4, 4);
 
 	bool reloadShaders = false;
 	// For speed computation
@@ -583,7 +616,10 @@ int main(void)
 		}
 		if (reloadShaders && glfwGetKey(window, GLFW_KEY_S) == GLFW_RELEASE) {
 			UnloadShaders();
-			LoadShaders(programID, "Simple.vert", "Phong.frag");
+			if (tess)
+				LoadShaders(programID, "Simple.vert", "Phong.frag", "contr.tesc", "eval.tese");
+			else
+				LoadShaders(programID,"1and2.vert","1and2.frag");
 			reloadShaders = false;
 		}
 		
@@ -625,9 +661,15 @@ int main(void)
 		GLuint SnowSTextureID = glGetUniformLocation(programID, "SnowSTextureSampler");
 
 
-		GLuint HeightDID = glGetUniformLocation(programID, "HeightMapData");
+		GLuint HeightWID = glGetUniformLocation(programID, "HeightMapWidth");
+		GLuint HeightHID = glGetUniformLocation(programID, "HeightMapHeight");
+
+		GLuint numPointsID = glGetUniformLocation(programID, "numPoints");
+
 		//set floats/int
-		glUniform2i(HeightDID, HeightMapW, HeightMapH);
+		glUniform1i(numPointsID, n_points);
+		glUniform1i(HeightWID, HeightMapW);
+		glUniform1i(HeightHID, HeightMapH);
 
 		//Set textures 
 		glActiveTexture(GL_TEXTURE0);
@@ -685,13 +727,24 @@ int main(void)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 
-		//Draw the triangles !
-		glDrawElements(
-			GL_TRIANGLES,      // mode
-			(GLsizei)indices.size(),    // count
-			GL_UNSIGNED_INT, // type
-			(void*)0           // element array buffer offset
-		);
+		if (tess)
+		{
+			glDrawElements(
+				GL_PATCHES,      // mode
+				(GLsizei)indices.size(),    // count
+				GL_UNSIGNED_INT, // type
+				(void*)0           // element array buffer offset
+			);
+		}
+		else {
+			//Draw the triangles !
+			glDrawElements(
+				GL_TRIANGLES,      // mode
+				(GLsizei)indices.size(),    // count
+				GL_UNSIGNED_INT, // type
+				(void*)0           // element array buffer offset
+			);
+		}
 
 		// Swap buffers
 		glfwSwapBuffers(window);
