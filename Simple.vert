@@ -33,9 +33,9 @@ float getVertexHeight(vec2 vertexUV){
 	return vertexHeight / 256;
 }
 
-vec3 calcNormal(vec2 vertexUV){//this doesnt work, i think its 0,0,0
-	//idk if this is right
-	float mulitplier = 10;
+vec3 calcNormal(vec2 vertexUV){
+
+	float mulitplier = 256;
 	vec2 vertexUVLeft = vec2(vertexUV.x - 1 / mulitplier, vertexUV.y);
 	vec2 vertexUVRight = vec2(vertexUV.x + 1 / mulitplier, vertexUV.y);
 	vec2 vertexUVUp = vec2(vertexUV.x, vertexUV.y + 1 / mulitplier);
@@ -45,10 +45,13 @@ vec3 calcNormal(vec2 vertexUV){//this doesnt work, i think its 0,0,0
 	vec2 vertexUVDownLeft = vec2(vertexUV.x - 1 / mulitplier, vertexUV.y - 1 / mulitplier);
 	vec2 vertexUVDownRight = vec2(vertexUV.x + 1 / mulitplier, vertexUV.y - 1 / mulitplier);
 
-	float normalx = (getVertexHeight(vertexUVLeft) - getVertexHeight(vertexUVRight) + getVertexHeight(vertexUVUpLeft) - getVertexHeight(vertexUVUpRight) + getVertexHeight(vertexUVDownLeft) - getVertexHeight(vertexUVDownRight))/3;
-	float normalz = (getVertexHeight(vertexUVUp) - getVertexHeight(vertexUVDown) + getVertexHeight(vertexUVUpLeft) - getVertexHeight(vertexUVDownLeft) + getVertexHeight(vertexUVUpRight) - getVertexHeight(vertexUVDownRight))/3;	
+//average
+	float normalx = (getVertexHeight(vertexUVLeft) - getVertexHeight(vertexUVRight) + getVertexHeight(vertexUVUpLeft) - 
+		getVertexHeight(vertexUVUpRight) + getVertexHeight(vertexUVDownLeft) - getVertexHeight(vertexUVDownRight))/3;
+	float normalz = (getVertexHeight(vertexUVUp) - getVertexHeight(vertexUVDown) + getVertexHeight(vertexUVUpLeft) - 
+		getVertexHeight(vertexUVDownLeft) + getVertexHeight(vertexUVUpRight) - getVertexHeight(vertexUVDownRight))/3;	
 
-	return vec3(normalx, getVertexHeight(vertexUV), normalz);
+	return vec3(normalx, vertexNormal_modelspace.y , normalz);//getVertexHeight(vertexUV)
 }
 
 void main(){

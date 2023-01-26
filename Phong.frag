@@ -25,23 +25,31 @@ uniform mat3 MV3x3;
 uniform vec3 LightPosition_worldspace;
 
 
-int isGRS(float y){//make it less harsh somehow
+/*int isGRS(float y){//make it less harsh somehow
 
-	float nY = normalize( Normal_worldspace).y;//normal cacluation not working
-	if(y > 30 || nY > 0.9){//
+	//float nY = normalize( Normal_worldspace).y;//normal cacluation not working
+	if(y > 23 ){//
 		return 2;//snow
 	}
-	else if(y > 17 ||nY > 0.7){//
+	else if (y > 21)
+	{
+		return 3;//snow and rock
+	}
+	else if(y > 12 ){//
 		return 1;//rock
+	}
+	else if (y > 9)
+	{
+		return 4;//rock and grass
 	}
 	else{
 		return 0;//grass
 	}
-}
+}*/
 
 void main(){
 
-	int GRS = isGRS(Position_worldspace.y);
+	float GRS = Position_worldspace.y;
 
 
 	// Some properties
@@ -53,17 +61,28 @@ void main(){
 	// Material properties
 	vec3 MaterialDiffuseColor = texture( DiffuseTextureSampler,vec2(UV.x,UV.y)).rgb;
 
-	if (GRS == 0)
+
+	if (GRS > 23 )
 	{
-		MaterialDiffuseColor = texture( GrassTextureSampler,vec2(UV.x,UV.y)).rgb;
+		MaterialDiffuseColor = texture( SnowTextureSampler,vec2(UV.x,UV.y)).rgb;
 	}
-	else if (GRS == 1)
+	else if (GRS > 21)
+	{
+		float alpha = (GRS - 21) / 2;// this is a number between 0 and 1 when it is 1 it is close to snow
+		MaterialDiffuseColor = mix(texture( RockTextureSampler,vec2(UV.x,UV.y)).rgb,texture( SnowTextureSampler,vec2(UV.x,UV.y)).rgb,alpha);
+	}
+	else if (GRS > 12 )
 	{
 		MaterialDiffuseColor = texture( RockTextureSampler,vec2(UV.x,UV.y)).rgb;
 	}
-	else if (GRS == 2)
+	else if (GRS > 10)
 	{
-		MaterialDiffuseColor = texture( SnowTextureSampler,vec2(UV.x,UV.y)).rgb;
+		float alpha = (GRS - 10) / 2;// this is a number between 0 and 1 when it is 1 it is close to snow
+		MaterialDiffuseColor = mix(texture( GrassTextureSampler,vec2(UV.x,UV.y)).rgb,texture( RockTextureSampler,vec2(UV.x,UV.y)).rgb,alpha);
+	}
+	else
+	{
+		MaterialDiffuseColor = texture( GrassTextureSampler,vec2(UV.x,UV.y)).rgb;
 	}
 
 	vec3 MaterialAmbientColor = vec3(0.1,0.1,0.1) * MaterialDiffuseColor;
